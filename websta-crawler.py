@@ -3,6 +3,7 @@
 # user defined variables
 debug = True
 urlBase = "http://websta.me/location/7428634"
+useCache = True
 
 # Functions
 def d(msg):
@@ -42,6 +43,13 @@ def writeFile(path,content,append = True):
 	file.close()
 	
 	return True
+
+def readFile(path):
+	# http://stackoverflow.com/questions/7409780/reading-entire-file-in-python
+	with open(path, 'r') as content_file:
+	    content = content_file.read()
+	
+	return content
 
 def getInstagramPics(body):
 	'''
@@ -129,6 +137,7 @@ if not res:
 	exit(1)
 
 pathImageURLs = dir + '/urls.txt'
+writeFile(pathImageURLs,'',False)
 
 cont = True
 
@@ -137,9 +146,6 @@ counterImages = 0
 while cont:
 	d('Trying to retrieve URL "' + url + '" ...')
 	
-	r = requests.get(url)
-	body = r.content
-	
 	counterPages += 1
 	
 	if counterPages == 1:
@@ -147,8 +153,15 @@ while cont:
 	else:
 		path = dir + '/' + getRangeId(url) + '.html'
 	
-	d('Writing HTTP response to file "' + path + '" ...')
-	writeFile(path,body,False)
+	if useCache and os.path.exists(path):
+		d('File "' + path + '" exists. Using cached content for parsing.')
+		body = readFile(path)
+	else:
+		r = requests.get(url)
+		body = r.content
+	
+		d('Writing HTTP response to file "' + path + '" ...')
+		writeFile(path,body,False)
 	
 	d('Parsing HTTP response for Instagram image URLs ...')
 	images = getInstagramPics(body)
