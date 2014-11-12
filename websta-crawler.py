@@ -78,13 +78,13 @@ def getNextPageURL(body):
 	try:
 		anchor = ul.find('a')
 	except:
-		d('Could not retrieve <ul class="pager">. Aborting.')
+		d('Could not retrieve first <a> within <ul class="pager">. Either <ul> or <a> is missing. Aborting.')
 		return False
 	
 	try:
 		href = 'http://websta.me' + anchor['href']
 	except:
-		d('Could not retrieve anchor[href]. Aborting.')
+		d('Could not retrieve attribute "href" of selected anchor. Aborting.')
 		return False
 	
 	return href
