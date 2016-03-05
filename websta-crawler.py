@@ -2,7 +2,7 @@
 
 # user defined variables
 debug = True
-urlBase = "http://websta.me/location/7428634"
+urlBase = "http://websta.me/location/787448876"
 useCache = True
 
 # Functions
@@ -52,6 +52,34 @@ def readFile(path):
 	return content
 
 def getInstagramPics(body):
+	'''
+	<a href="/p/1073756640901326121_2152802296" class="mainimg">
+	<div class="img-cover" style="height: 306px;background-image: url('https://scontent.cdninstagram.com/t51.2885-15/s320x320/e35/10520268_1640060686233595_1396186005_n.jpg?ig_cache_key=MTA3Mzc1NjY0MDkwMTMyNjEyMQ%3D%3D.2')"></div>
+
+	</a>
+	'''
+
+	soup = BeautifulSoup(body)
+	divs = soup.findAll('div', { 'class':'img-cover' })
+
+	images = []
+
+	for div in divs:
+		style = div['style']
+		
+		m = re.search("url\('([^']+)'\)", style)
+		srcRaw = m.group(1)
+		
+		d('   ' + srcRaw)
+		
+		tmp = srcRaw.split('?')
+		src = tmp[0]
+		
+		images.append(src)
+
+	return images
+
+def getInstagramPicsLegacy(body):
 	'''
 	<a href="/p/848877224061586781_657671810" class="mainimg">
 	<img src="http://scontent-b.cdninstagram.com/hphotos-xpf1/t51.2885-15/10735151_559130887522169_489118905_a.jpg" width="306" heigh="306">
